@@ -1,0 +1,27 @@
+#+title: magit-buildkite
+
+* Installation
+
+Add ~magit-buildkite.el~ to your Emacs load path, then run:
+
+#+begin_src emacs-lisp
+  (require 'magit-buildkite)
+  (magit-buildkite-mode)
+#+end_src
+
+In order to configure ~magit-buildkite~, set the following variables:
+
+- ~magit-buildkite-auth-token~ a token authorising ~magit-buildkite~ to fetch data on your behalf
+
+- ~magit-buildkite-organization~ the organisation of the pipeline to fetch information about
+
+- ~magit-buildkite-pipeline~ the name of the pipeline to fetch
+
+These can be set on a per-project basis by using ~.dir-locals.el~ or ~.dir-locals-2.el~ like so:
+
+#+begin_src emacs-lisp
+  ((nil
+    (magit-buildkite-auth-token . "your-token")
+    (magit-buildkite-organization . "your-organization")
+    (magit-buildkite-pipeline . "your-pipeline")))
+#+end_src
