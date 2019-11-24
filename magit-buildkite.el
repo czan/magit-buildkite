@@ -91,8 +91,8 @@
 (define-derived-mode magit-buildkite-log-mode special-mode "Buildkite[Log]"
   "A mode for viewing log files from Buildkite."
   (ansi-color-apply-on-region (point-min) (point-max))
-  (read-only-mode 1)
-  (outline-minor-mode 1)
+  (view-mode)
+  (outline-minor-mode)
   (setq-local outline-regexp "~~~")
   (outline-hide-body)
   (visual-line-mode -1))
