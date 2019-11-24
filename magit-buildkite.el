@@ -91,10 +91,6 @@
 (define-derived-mode magit-buildkite-log-mode special-mode "Buildkite[Log]"
   "A mode for viewing log files from Buildkite."
   (ansi-color-apply-on-region (point-min) (point-max))
-  ;; hackity hack-hack! :)
-  (replace-string "" "" nil (point-min) (point-max))
-  (replace-string "\n" "\n" nil (point-min) (point-max))
-  (replace-string "" "\n" nil (point-min) (point-max))
   (read-only-mode 1)
   (outline-minor-mode 1)
   (setq-local outline-regexp "~~~")
@@ -227,6 +223,10 @@ update/replace heading/body functions."
             (let ((inhibit-read-only t))
               (erase-buffer)
               (insert data)
+              ;; hackity hack-hack! :)
+              (replace-string "" "" nil (point-min) (point-max))
+              (replace-string "\n" "\n" nil (point-min) (point-max))
+              (replace-string "" "\n" nil (point-min) (point-max))
               (magit-buildkite-log-mode)
               (beginning-of-buffer))
             (display-buffer (current-buffer))))
