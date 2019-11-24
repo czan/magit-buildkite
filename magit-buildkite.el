@@ -82,10 +82,29 @@
     (when url
       (browse-url url))))
 
+(defun magit-buildkite-log-toggle-all ()
+  "If any outline sections are shown, hide them all. Otherwise,
+show them all."
+  (interactive)
+  (save-mark-and-excursion
+    (let ((any-invisible? nil))
+      (outline-map-region (lambda ()
+                            (end-of-line)
+                            (setq any-invisible? (or any-invisible?
+                                                     (outline-invisible-p))))
+                          (point-min) (point-max))
+      (outline-map-region (lambda ()
+                            (if (not any-invisible?)
+                                (outline-hide-subtree)
+                              (outline-show-children)
+                              (outline-show-entry)))
+                          (point-min) (point-max)))))
+
 (defvar magit-buildkite-log-mode-map
   (let ((map (make-sparse-keymap)))
     (define-key map (kbd "q") #'bury-buffer)
-    (define-key map (kbd "TAB") #'outline-toggle-children)
+    (define-key map (kbd "<tab>") #'outline-toggle-children)
+    (define-key map (kbd "<backtab>") #'magit-buildkite-log-toggle-all)
     map))
 
 (define-derived-mode magit-buildkite-log-mode special-mode "Buildkite[Log]"
