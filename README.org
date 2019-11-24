@@ -2,6 +2,8 @@
 
 * Installation
 
+Install ~magit-buildkite~'s dependencies: ~request~ and ~magit~.
+
 Add ~magit-buildkite.el~ to your Emacs load path, then run:
 
 #+begin_src emacs-lisp

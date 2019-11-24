@@ -2,6 +2,10 @@
 
 ;; Copyright (C) 2019  Carlo Zancanaro
 
+;; Author: Carlo Zancanaro <carlo@zancanaro.id.au>
+;; Homepage: https://github.com/czan/magit-buildkite
+;; Package-Requires: ((request "0.3.1") (magit "2.90.1"))
+
 ;; magit-buildkite is free software; you can redistribute it and/or
 ;; modify it under the terms of the GNU General Public License version
 ;; 3 as published by the Free Software Foundation.
