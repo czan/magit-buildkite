@@ -375,40 +375,43 @@ update/replace heading/body functions."
           (magit-buildkite-insert-build-information job indent))))))
 
 (defun magit-buildkite-insert-recent-builds ()
-  (setq-local magit-buildkite--buffer-refresh-token (gensym "refresh-token"))
-  (let ((url (format "https://api.buildkite.com/v2/organizations/%s/pipelines/%s/builds?per_page=1&commit=%s"
+  (when (and magit-buildkite-auth-token
+             magit-buildkite-organization
+             magit-buildkite-pipeline)
+    (setq-local magit-buildkite--buffer-refresh-token (gensym "refresh-token"))
+    (let ((url (format "https://api.buildkite.com/v2/organizations/%s/pipelines/%s/builds?per_page=1&commit=%s"
                        magit-buildkite-organization
                        magit-buildkite-pipeline
                        (magit-rev-format "%H"))))
-    (magit-insert-section (buildkite nil t)
-      (magit-insert-heading "Buildkite")
-      (magit-buildkite-insert-section-body
-        (insert "loading...\n\n"))
-      (magit-buildkite-get-request url 'json
-        (lambda (&rest args)
-          (let ((data (plist-get args :data)))
-            (if (> (length data) 0)
-                (let* ((build (aref data 0))
-                       (build-number (plist-get build 'number)))
-                  (magit-buildkite-replace-heading `(magit-buildkite-web-url ,(plist-get build 'web_url))
-                    (insert (format "Buildkite build %s [%s]\n"
-                                    build-number
-                                    (if (eq (plist-get build 'blocked) :json-false)
-                                        (plist-get build 'state)
-                                      "blocked"))))
-                  (magit-buildkite-replace-body `(magit-buildkite-build-number ,build-number)
-                    (let* ((build (aref data 0))
-                           (build-number (plist-get build 'number)))
-                      (map nil #'magit-buildkite-insert-job
-                           (plist-get build 'jobs))
-                      (insert "\n"))))
-              (magit-buildkite-update-body ()
-                (insert "No build data found\n")
-                (insert "\n")))))
-        (lambda (&rest args)
-          (magit-buildkite-replace-body ()
-            (magit-insert-section (buildkite-error nil t)
-              (insert "Error fetching build data\n\n"))))))))
+      (magit-insert-section (buildkite nil t)
+        (magit-insert-heading "Buildkite")
+        (magit-buildkite-insert-section-body
+          (insert "loading...\n\n"))
+        (magit-buildkite-get-request url 'json
+          (lambda (&rest args)
+            (let ((data (plist-get args :data)))
+              (if (> (length data) 0)
+                  (let* ((build (aref data 0))
+                         (build-number (plist-get build 'number)))
+                    (magit-buildkite-replace-heading `(magit-buildkite-web-url ,(plist-get build 'web_url))
+                      (insert (format "Buildkite build %s [%s]\n"
+                                      build-number
+                                      (if (eq (plist-get build 'blocked) :json-false)
+                                          (plist-get build 'state)
+                                        "blocked"))))
+                    (magit-buildkite-replace-body `(magit-buildkite-build-number ,build-number)
+                      (let* ((build (aref data 0))
+                             (build-number (plist-get build 'number)))
+                        (map nil #'magit-buildkite-insert-job
+                             (plist-get build 'jobs))
+                        (insert "\n"))))
+                (magit-buildkite-update-body ()
+                  (insert "No build data found\n")
+                  (insert "\n")))))
+          (lambda (&rest args)
+            (magit-buildkite-replace-body ()
+              (magit-insert-section (buildkite-error nil t)
+                (insert "Error fetching build data\n\n")))))))))
 
 (define-minor-mode magit-buildkite-mode
   "Add a new section to the magit status screen which loads
