@@ -87,14 +87,14 @@
 show them all."
   (interactive)
   (save-mark-and-excursion
-    (let ((any-invisible? nil))
+    (let ((all-visible? t))
       (outline-map-region (lambda ()
                             (end-of-line)
-                            (setq any-invisible? (or any-invisible?
-                                                     (outline-invisible-p))))
+                            (setq all-visible? (and all-visible?
+                                                    (not (outline-invisible-p)))))
                           (point-min) (point-max))
       (outline-map-region (lambda ()
-                            (if (not any-invisible?)
+                            (if all-visible?
                                 (outline-hide-subtree)
                               (outline-show-children)
                               (outline-show-entry)))
