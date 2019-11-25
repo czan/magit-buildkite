@@ -100,6 +100,13 @@ show them all."
                               (outline-show-entry)))
                           (point-min) (point-max)))))
 
+(defun magit-buildkite-automatically-open ()
+  (save-match-data
+    (save-mark-and-excursion
+      (beginning-of-buffer)
+      (while (search-forward "^^^ +++" nil :noerror)
+        (outline-show-entry)))))
+
 (defvar magit-buildkite-log-mode-map
   (let ((map (make-sparse-keymap)))
     (define-key map (kbd "q") #'bury-buffer)
@@ -114,11 +121,14 @@ show them all."
   (ansi-color-apply-on-region (point-min) (point-max))
   (view-mode)
   (outline-minor-mode)
-  (setq-local outline-regexp "~~~\\|\\$")
+  (setq-local outline-regexp "~~~\\|\\$\\|---\\|+++")
   (setq-local outline-heading-alist '(("~~~" . 1)
-                                      ("$" . 2)))
+                                      ("$" . 2)
+                                      ("---" . 3)
+                                      ("+++" . 3)))
   (outline-hide-sublevels 1)
-  (visual-line-mode -1))
+  (visual-line-mode -1)
+  (magit-buildkite-automatically-open))
 
 (defun magit-buildkite--maintaining-section (func)
   (declare (indent defun))
