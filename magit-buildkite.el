@@ -428,7 +428,7 @@ update/replace heading/body functions."
                         (map nil #'magit-buildkite-insert-job
                              (plist-get build 'jobs))
                         (insert "\n"))))
-                (magit-buildkite-update-body ()
+                (magit-buildkite-replace-body ()
                   (insert "No build data found\n")
                   (insert "\n")))))
           (lambda (&rest args)
