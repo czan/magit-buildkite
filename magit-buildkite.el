@@ -112,8 +112,10 @@ show them all."
   (ansi-color-apply-on-region (point-min) (point-max))
   (view-mode)
   (outline-minor-mode)
-  (setq-local outline-regexp "~~~")
-  (outline-hide-body)
+  (setq-local outline-regexp "~~~\\|\\$")
+  (setq-local outline-heading-alist '(("~~~" . 1)
+                                      ("$" . 2)))
+  (outline-hide-sublevels 1)
   (visual-line-mode -1))
 
 (defun magit-buildkite--maintaining-section (func)
