@@ -105,6 +105,8 @@ show them all."
     (define-key map (kbd "q") #'bury-buffer)
     (define-key map (kbd "<tab>") #'outline-toggle-children)
     (define-key map (kbd "<backtab>") #'magit-buildkite-log-toggle-all)
+    (define-key map (kbd "C-c C-n") #'outline-next-visible-heading)
+    (define-key map (kbd "C-c C-p") #'outline-previous-visible-heading)
     map))
 
 (define-derived-mode magit-buildkite-log-mode special-mode "Buildkite[Log]"
