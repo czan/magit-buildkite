@@ -262,7 +262,7 @@ update/replace heading/body functions."
               (replace-string "" "\n" nil (point-min) (point-max))
               (magit-buildkite-log-mode)
               (beginning-of-buffer))
-            (display-buffer (current-buffer))))
+            (pop-to-buffer (current-buffer))))
         (lambda (&rest args)
           (message "Error retrieving log for job %s" (plist-get properties 'magit-buildkite-job-name)))))))
 
