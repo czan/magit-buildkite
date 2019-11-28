@@ -452,7 +452,7 @@ update/replace heading/body functions."
 
 (define-minor-mode magit-buildkite-mode
   "Add a new section to the magit status screen which loads
-  builkite build information for the current commit."
+  Buildkite build information for the current commit."
   :init-value nil
   :lighter " Buildkite"
   (unless (eq major-mode 'magit-status-mode)
