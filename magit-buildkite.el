@@ -104,7 +104,7 @@ show them all."
   (save-match-data
     (save-mark-and-excursion
       (beginning-of-buffer)
-      (while (search-forward "^^^ +++" nil :noerror)
+      (while (re-search-forward (rx bol (? "^^^ ") "+++") nil :noerror)
         (outline-show-entry)))))
 
 (defvar magit-buildkite-log-mode-map
@@ -121,11 +121,11 @@ show them all."
   (ansi-color-apply-on-region (point-min) (point-max))
   (view-mode)
   (outline-minor-mode)
-  (setq-local outline-regexp "~~~\\|\\$\\|---\\|+++")
-  (setq-local outline-heading-alist '(("~~~" . 1)
-                                      ("$" . 2)
-                                      ("---" . 3)
-                                      ("+++" . 3)))
+  (setq-local outline-regexp "~~~ \\|\\$ \\|--- \\|\\+\\+\\+ ")
+  (setq-local outline-heading-alist '(("~~~ " . 1)
+                                      ("$ " . 2)
+                                      ("--- " . 3)
+                                      ("+++ " . 3)))
   (outline-hide-sublevels 1)
   (visual-line-mode -1)
   (magit-buildkite-automatically-open))
