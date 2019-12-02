@@ -186,7 +186,6 @@ show them all."
             (unwind-protect (funcall thunk)
               (set-marker start (point-min))
               (set-marker content (point-max))
-              (set-text-properties start content base-properties)
               (add-text-properties start content properties))))))))
 
 (defmacro magit-buildkite-update-heading (properties &rest body)
@@ -431,11 +430,12 @@ update/replace heading/body functions."
                   (let* ((build (aref data 0))
                          (build-number (plist-get build 'number)))
                     (magit-buildkite-replace-heading `(magit-buildkite-web-url ,(plist-get build 'web_url))
-                      (insert (format "Buildkite build %s [%s]\n"
-                                      build-number
-                                      (if (eq (plist-get build 'blocked) :json-false)
-                                          (plist-get build 'state)
-                                        "blocked"))))
+                      (magit-insert-heading
+                        (format "Buildkite build %s [%s]\n"
+                                build-number
+                                (if (eq (plist-get build 'blocked) :json-false)
+                                    (plist-get build 'state)
+                                  "blocked"))))
                     (magit-buildkite-replace-body `(magit-buildkite-build-number ,build-number)
                       (let* ((build (aref data 0))
                              (build-number (plist-get build 'number)))
