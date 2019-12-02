@@ -314,7 +314,7 @@ update/replace heading/body functions."
     (define-key map [remap magit-visit-thing] #'magit-buildkite-visit-artifact)
     map))
 
-(defun magit-buildkite-insert-triggered-subjobs (triggered-build indent)
+(defun magit-buildkite-update-triggered-job (job-state triggered-build indent)
   (let ((triggered-build-url (plist-get triggered-build 'url)))
     (when triggered-build-url
       (magit-buildkite-insert-section-body
@@ -323,6 +323,16 @@ update/replace heading/body functions."
         (magit-buildkite-get-request triggered-build-url 'json
           (lambda (&rest args)
             (let ((data (plist-get args :data)))
+              (magit-buildkite-update-heading ()
+                (let ((build-state (plist-get data 'state)))
+                  (when (search-forward (format "[%s]" job-state) nil t)
+                    (replace-match (propertize (format "[%s]" build-state)
+                                               'face (pcase build-state
+                                                       ("passed" 'magit-buildkite-job-status-good)
+                                                       ("failed" 'magit-buildkite-job-status-bad)
+                                                       (_ 'magit-buildkite-job-status-neutral))
+                                               'magit-buildkite-web-url (plist-get triggered-build 'web_url))
+                                   nil t))))
               (magit-buildkite-replace-body `(magit-buildkite-build-number ,(plist-get data 'number))
                 (map nil (lambda (job)
                            (magit-buildkite-insert-job job (+ indent 2)))
@@ -381,19 +391,19 @@ update/replace heading/body functions."
 (defun magit-buildkite-insert-job (job &optional indent)
   (setq indent (or indent 0))
   (when (plist-get job 'name)
-    (let ((trigger? (string= (plist-get job 'type) "trigger")))
+    (let ((trigger? (string= (plist-get job 'type) "trigger"))
+          (state (if (eq (plist-get job 'soft_failed) t)
+                     "failed"
+                   (plist-get job 'state))))
       (magit-insert-section section (buildkite-job (plist-get job 'id) t)
         (magit-insert-heading
           (loop for i below indent
                 concat " ")
-          (let ((state (if (eq (plist-get job 'soft_failed) t)
-                           "failed"
-                           (plist-get job 'state))))
-            (propertize (format "[%s]" state)
-                        'face (pcase state
-                                ("passed" 'magit-buildkite-job-status-good)
-                                ("failed" 'magit-buildkite-job-status-bad)
-                                (_ 'magit-buildkite-job-status-neutral))))
+          (propertize (format "[%s]" state)
+                      'face (pcase state
+                              ("passed" 'magit-buildkite-job-status-good)
+                              ("failed" 'magit-buildkite-job-status-bad)
+                              (_ 'magit-buildkite-job-status-neutral)))
           " "
           (plist-get job 'name)
           (when trigger?
@@ -405,7 +415,7 @@ update/replace heading/body functions."
               (add-text-properties (slot-value section 'start) (point)
                                    (list 'magit-buildkite-web-url
                                          (plist-get triggered-build 'web_url)))
-              (magit-buildkite-insert-triggered-subjobs triggered-build indent))
+              (magit-buildkite-update-triggered-job state triggered-build indent))
           (add-text-properties (slot-value section 'start) (point)
                                (list 'magit-buildkite-web-url (plist-get job 'web_url)))
           (magit-buildkite-insert-build-information job indent))))))
