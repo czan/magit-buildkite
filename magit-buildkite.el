@@ -465,14 +465,13 @@ update/replace heading/body functions."
   Buildkite build information for the current commit."
   :init-value nil
   :lighter " Buildkite"
-  (unless (eq major-mode 'magit-status-mode)
-    (error "magit-buildkite-mode can only be run in magit-status-mode"))
-  (if magit-buildkite-mode
-      (magit-add-section-hook 'magit-status-sections-hook
-                              #'magit-buildkite-insert-recent-builds
-                              'magit-insert-recent-commits
-                              :append)
-    (setq magit-status-sections-hook
-          (remove #'magit-buildkite-insert-recent-builds magit-status-sections-hook))))
+  (when (eq major-mode 'magit-status-mode)
+    (if magit-buildkite-mode
+        (magit-add-section-hook 'magit-status-sections-hook
+                                #'magit-buildkite-insert-recent-builds
+                                'magit-insert-recent-commits
+                                :append)
+      (setq magit-status-sections-hook
+            (remove #'magit-buildkite-insert-recent-builds magit-status-sections-hook)))))
 
 (provide 'magit-buildkite)
